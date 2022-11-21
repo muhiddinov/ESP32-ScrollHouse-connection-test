@@ -51,6 +51,32 @@ String configValues[] = {
   "ws://85.209.88.209/ws/device/"
 };
 
+struct Switch {
+  const char * name;
+  uint8_t id;
+  boolean stat;
+  Switch(const char* name, uint8_t id, bool status) {
+    this->name = name;
+    this->id = id;
+    this->stat = status;
+  }
+  String getName () {
+    return String(this->name);
+  }
+  uint8_t getId () {
+    return this->id;
+  }
+  bool getStatus () {
+    return this->stat;
+  }
+  String getJsonData () {
+    char temp[200];
+    sprintf(temp, "{\"name\":%s,\"id\":%d,\"status\":%d}", this->name, this->id, this->stat);
+    return String(temp);
+  }
+};
+
+
 String getConfigValue (String name) {
   int index = -1;
   for (int i = 0; i < 9; i++) {
@@ -70,6 +96,7 @@ void handleSetWiFi () {
         if (http_server.hasArg(configNames[i])) {
           configValues[i] = http_server.arg(configNames[i]);
         }
+        Serial.println(http_server.arg(i));
       }
       File f = SPIFFS.open(wpa_conf_path, "w");
       for (int i = 0; i < 9; i++) {
